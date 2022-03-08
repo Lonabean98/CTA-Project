@@ -1,3 +1,7 @@
+import numpy as np
+import timeit
+import time
+
 def countingSortForRadix(inputArray, placeValue):
     # We can assume that the number of digits used to represent
     # all numbers on the placeValue position is not grater than 10
@@ -49,8 +53,9 @@ def radixSort(inputArray):
         D -= 1
 
     return outputArray
-    
-input = [2,20,61,997,1,619]
+
+rng = np.random.default_rng()
+input= rng.integers(low=0, high=10, size=5)
 print(input)
 sorted = radixSort(input)
 print(sorted)
