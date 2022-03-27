@@ -57,7 +57,7 @@ for x in range(10):
 
 # reshape the array to 2 dimensions
 test= np.reshape(test, (10, 13))
-
+#print(test)
 
 # print mean of columns
 print(test.mean(axis=0))
@@ -68,3 +68,7 @@ with open('times.csv', 'a') as f:
 
     # write a row to the csv file
     writer.writerow(test.mean(axis=0))
+
+
+#df = pd.DataFrame(test.mean(axis=0))
+#df.to_csv('times.csv', mode= 'a')

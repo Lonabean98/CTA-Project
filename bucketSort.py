@@ -1,8 +1,9 @@
-from random import randint
 import numpy as np
 import timeit
 import time
 import csv
+
+
 
 def insertion_sort(array):
     # Loop from the second element of the array until
@@ -34,6 +35,34 @@ def insertion_sort(array):
 
     return array
 
+def bucket_sort(input_list):
+    # Find maximum value in the list and use length of the list to determine which value in the list goes into which bucket 
+    max_value = max(input_list)
+    size = max_value/len(input_list)
+
+    # Create n empty buckets where n is equal to the length of the input list
+    buckets_list= []
+    for x in range(len(input_list)):
+        buckets_list.append([]) 
+
+    # Put list elements into different buckets based on the size
+    for i in range(len(input_list)):
+        j = int (input_list[i] / size)
+        if j != len (input_list):
+            buckets_list[j].append(input_list[i])
+        else:
+            buckets_list[len(input_list) - 1].append(input_list[i])
+
+    # Sort elements within the buckets using Insertion Sort
+    for z in range(len(input_list)):
+        insertion_sort(buckets_list[z])
+            
+    # Concatenate buckets with sorted elements into a single list
+    final_output = []
+    for x in range(len (input_list)):
+        final_output = final_output + buckets_list[x]
+    return final_output
+
 rng = np.random.default_rng()
  
 test= []
@@ -43,7 +72,7 @@ def runs(noRuns):
         
         start_time = time.time()
         # call your function
-        insertion_sort(rng.integers(low=0, high=10, size=x))
+        bucket_sort(rng.integers(low=0, high=10, size=x))
         end_time = time.time()
         time_elapsed = end_time - start_time
         test.append(time_elapsed)
@@ -52,15 +81,14 @@ def runs(noRuns):
 
 # Run the test 10 times
 for x in range(10): 
-    runs([100, 200, 500,750, 1000])
+    runs([100, 200, 500,750, 1000, 1250,2500, 3750, 5000, 6250, 7500, 8750, 10000])
 
 # reshape the array to 2 dimensions
-test= np.reshape(test, (10, 5))
+test= np.reshape(test, (10, 13))
 
 
 # print mean of columns
 print(test.mean(axis=0))
-
 
 with open('times.csv', 'a') as f:
     # create the csv writer

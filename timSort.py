@@ -1,74 +1,120 @@
-def insertion_sort(array, left=0, right=None):
-    if right is None:
-        right = len(array) - 1
+from random import randint
+import numpy as np
+import timeit
+import time
+import pandas as pd
+import csv
 
-    # Loop from the element indicated by
-    # `left` until the element indicated by `right`
-    for i in range(left + 1, right + 1):
-        # This is the element we want to position in its
-        # correct place
-        key_item = array[i]
-
-        # Initialize the variable that will be used to
-        # find the correct position of the element referenced
-        # by `key_item`
-        j = i - 1
-
-        # Run through the list of items (the left
-        # portion of the array) and find the correct position
-        # of the element referenced by `key_item`. Do this only
-        # if the `key_item` is smaller than its adjacent values.
-        while j >= left and array[j] > key_item:
-            # Shift the value one position to the left
-            # and reposition `j` to point to the next element
-            # (from right to left)
-            array[j + 1] = array[j]
+MINIMUM= 32
+  
+def find_minrun(n): 
+  
+    r = 0
+    while n >= MINIMUM: 
+        r |= n & 1
+        n >>= 1
+    return n + r 
+  
+def insertion_sort(array, left, right): 
+    for i in range(left+1,right+1):
+        element = array[i]
+        j = i-1
+        while element<array[j] and j>=left :
+            array[j+1] = array[j]
             j -= 1
-
-        # When you finish shifting the elements, position
-        # the `key_item` in its correct location
-        array[j + 1] = key_item
-
+        array[j+1] = element
     return array
+              
+def merge(array, l, m, r): 
+  
+    array_length1= m - l + 1
+    array_length2 = r - m 
+    left = []
+    right = []
+    for i in range(0, array_length1): 
+        left.append(array[l + i]) 
+    for i in range(0, array_length2): 
+        right.append(array[m + 1 + i]) 
+  
+    i=0
+    j=0
+    k=l
+   
+    while j < array_length2 and  i < array_length1: 
+        if left[i] <= right[j]: 
+            array[k] = left[i] 
+            i += 1
+  
+        else: 
+            array[k] = right[j] 
+            j += 1
+  
+        k += 1
+  
+    while i < array_length1: 
+        array[k] = left[i] 
+        k += 1
+        i += 1
+  
+    while j < array_length2: 
+        array[k] = right[j] 
+        k += 1
+        j += 1
+  
+def tim_sort(array): 
+    n = len(array) 
+    minrun = find_minrun(n) 
+  
+    for start in range(0, n, minrun): 
+        end = min(start + minrun - 1, n - 1) 
+        insertion_sort(array, start, end) 
+   
+    size = minrun 
+    while size < n: 
+  
+        for left in range(0, n, 2 * size): 
+  
+            mid = min(n - 1, left + size - 1) 
+            right = min((left + 2 * size - 1), (n - 1)) 
+            merge(array, left, mid, right) 
+  
+        size = 2 * size 
 
-def timsort(array):
-    min_run = 32
-    n = len(array)
 
-    # Start by slicing and sorting small portions of the
-    # input array. The size of these slices is defined by
-    # your `min_run` size.
-    for i in range(0, n, min_run):
-        insertion_sort(array, i, min((i + min_run - 1), n - 1))
+rng = np.random.default_rng()
+ 
+test= []
+def runs(noRuns):
+    
+    for x in noRuns:
+        
+        start_time = time.time()
+        # call your function
+        tim_sort(rng.integers(low=0, high=10, size=x))
+        end_time = time.time()
+        time_elapsed = end_time - start_time
+        # Add the time taken to the "test" array, rounded to 3 places
+        test.append(time_elapsed)
+        
+    
 
-    # Now you can start merging the sorted slices.
-    # Start from `min_run`, doubling the size on
-    # each iteration until you surpass the length of
-    # the array.
-    size = min_run
-    while size < n:
-        # Determine the arrays that will
-        # be merged together
-        for start in range(0, n, size * 2):
-            # Compute the `midpoint` (where the first array ends
-            # and the second starts) and the `endpoint` (where
-            # the second array ends)
-            midpoint = start + size - 1
-            end = min((start + size * 2 - 1), (n-1))
 
-            # Merge the two subarrays.
-            # The `left` array should go from `start` to
-            # `midpoint + 1`, while the `right` array should
-            # go from `midpoint + 1` to `end + 1`.
-            merged_array = merge(
-                left=array[start:midpoint + 1],
-                right=array[midpoint + 1:end + 1])
+# Run the test 10 times
+for x in range(10): 
+    runs([100, 200, 500,750, 1000, 1250,2500, 3750, 5000, 6250, 7500, 8750, 10000])
 
-            # Finally, put the merged array back into
-            # your array
-            array[start:start + len(merged_array)] = merged_array
+# reshape the array to 2 dimensions
+test= np.reshape(test, (10, 13))
+#print(test)
 
-        # Each iteration should double the size of your arrays
-        size *= 2
+# print mean of columns
+print(test.mean(axis=0))
 
-    return array
+
+with open('times.csv', 'a') as f:
+    # create the csv writer
+    writer = csv.writer(f)
+
+    # write a row to the csv file
+    writer.writerow(test.mean(axis=0))
+
