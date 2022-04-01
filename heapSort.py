@@ -1,27 +1,45 @@
-from tkinter import Y
 import numpy as np
 import time
-import numpy as np
 import csv
 
+# From: https://www.programiz.com/dsa/heap-sort
 
+def heapify(arr, n, i):
+     # Find largest among root and children
+     largest = i
+     l = 2 * i + 1
+     r = 2 * i + 2
+ 
+     if l < n and arr[i] < arr[l]:
+         largest = l
+ 
+     if r < n and arr[largest] < arr[r]:
+         largest = r
+ 
+     # If root is not largest, swap with largest and recursively call heapify
+     if largest != i:
+         arr[i], arr[largest] = arr[largest], arr[i]
+         heapify(arr, n, largest)
+ 
+ 
+def heapSort(arr):
+     n = len(arr)
+ 
+     # Build max heap
+     for i in range(n//2, -1, -1):
+         heapify(arr, n, i)
+ 
+     for i in range(n-1, 0, -1):
+         # Swap
+         arr[i], arr[0] = arr[0], arr[i]
+ 
+         # Heapify root element
+         heapify(arr, i, 0)
 
-
-# From: https://stackabuse.com/bubble-sort-in-python/
-
-def bubble_sort(our_list):
-    # Go through the array as many times as there are elements in the array
-    for i in range(len(our_list)):
-        # Go through the array up to the second last element
-        for j in range(len(our_list) - 1):
-            # If the element before the next element is larger...
-            if our_list[j] > our_list[j+1]:
-                # Swap their positions
-                our_list[j], our_list[j+1] = our_list[j+1], our_list[j]
 
 # Initialise the random generator
 rng = np.random.default_rng()
- 
+
 # empty array to contain sorting times
 test= []
 # Function to allow multiple input instances 
@@ -31,7 +49,7 @@ def runs(noRuns):
         # fetches current number of seconds since epoch
         start_time = time.time()
         # call the sorting function
-        bubble_sort(rng.integers(low=0, high=10, size=x))
+        heapSort(rng.integers(low=0, high=10, size=x))
         # fetches current number of seconds since epoch
         end_time = time.time()
         # subtract start and end times to get the elapsed time
@@ -42,11 +60,11 @@ def runs(noRuns):
 
 
 # Run the test 10 times
-for x in range(2): 
+for x in range(10): 
     runs([100, 200, 500,750, 1000, 1250,2500, 3750, 5000, 6250, 7500, 8750, 10000])
 
 # reshape the array to 2 dimensions
-test= np.reshape(test, (2, 13))
+test= np.reshape(test, (10, 13))
 
 
 # print mean of columns
@@ -59,4 +77,3 @@ with open('times.csv', 'a') as f:
 
     # write a row to the csv file
     writer.writerow(test.mean(axis=0))
-

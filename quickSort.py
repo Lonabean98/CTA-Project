@@ -1,20 +1,20 @@
+# Import modules to be used
 from random import randint
 import numpy as np
-import timeit
 import time
-import pandas as pd
 import csv
 
 #From: https://realpython.com/sorting-algorithms-python/#the-quicksort-algorithm-in-python
+
 def quicksort(array):
-    # If the input array contains fewer than two elements,
-    # then return it as the result of the function
+    # If the input array contains less than two elements,
+    # then return it as an array with only one element can't be sorted
     if len(array) < 2:
         return array
 
     low, same, high = [], [], []
 
-    # Select your `pivot` element randomly
+    # Randomly select an element to 'Pivot' on (not including the first or last element)
     pivot = array[randint(0, len(array) - 1)]
 
     for item in array:
@@ -29,24 +29,29 @@ def quicksort(array):
         elif item > pivot:
             high.append(item)
 
-    # The final result combines the sorted `low` list
-    # with the `same` list and the sorted `high` list
+    # Quicksort is recursively called on the 'low' and 'high' 
+    # lists and then they are joined, with 'same' in the middle
     return quicksort(low) + same + quicksort(high)
 
 
+# Initialise the random generator
 rng = np.random.default_rng()
- 
+
+# empty array to contain sorting times
 test= []
+# Function to allow multiple input instances 
 def runs(noRuns):
-    
+    # Loop through list of input sizes
     for x in noRuns:
-        
+        # fetches current number of seconds since epoch
         start_time = time.time()
-        # call your function
+        # call the sorting function
         quicksort(rng.integers(low=0, high=10, size=x))
+        # fetches current number of seconds since epoch
         end_time = time.time()
+        # subtract start and end times to get the elapsed time
         time_elapsed = end_time - start_time
-         # Add the time taken to the "test" array, rounded to 3 places
+        # add this time to the array
         test.append(time_elapsed)
     
 
@@ -62,6 +67,7 @@ test= np.reshape(test, (10, 13))
 # print mean of columns
 print(test.mean(axis=0))
 
+# Open the times.csv file and append what comes next
 with open('times.csv', 'a') as f:
     # create the csv writer
     writer = csv.writer(f)

@@ -1,16 +1,14 @@
 import numpy as np
-import timeit
 import time
 import csv
 
-
+#From: https://www.geeksforgeeks.org/insertion-sort/
 
 def insertion_sort(array):
     # Loop from the second element of the array until
-    # the last element
+    # element at the end of the array
     for i in range(1, len(array)):
-        # This is the element we want to position in its
-        # correct place
+        # Specify the element of interest
         key_item = array[i]
 
         # Initialize the variable that will be used to
@@ -18,25 +16,23 @@ def insertion_sort(array):
         # by `key_item`
         j = i - 1
 
-        # Run through the list of items (the left
-        # portion of the array) and find the correct position
-        # of the element referenced by `key_item`. Do this only
-        # if `key_item` is smaller than its adjacent values.
+        # If key_item is smaller than the number before it, 
+        # run through the list of items and find the correct position
         while j >= 0 and array[j] > key_item:
-            # Shift the value one position to the left
+            # Move the value one position to the left
             # and reposition j to point to the next element
-            # (from right to left)
             array[j + 1] = array[j]
             j -= 1
 
-        # When you finish shifting the elements, you can position
-        # `key_item` in its correct location
+        # When the elements are shifted, move
+        # `key_item` to its correct location
         array[j + 1] = key_item
 
     return array
 
 def bucket_sort(input_list):
-    # Find maximum value in the list and use length of the list to determine which value in the list goes into which bucket 
+    # Find maximum value in the list and use length of 
+    # the list to determine which value in the list goes into which bucket 
     max_value = max(input_list)
     size = max_value/len(input_list)
 
@@ -53,28 +49,34 @@ def bucket_sort(input_list):
         else:
             buckets_list[len(input_list) - 1].append(input_list[i])
 
-    # Sort elements within the buckets using Insertion Sort
+    # Call insertion sort on the elements of each bucket
     for z in range(len(input_list)):
         insertion_sort(buckets_list[z])
             
-    # Concatenate buckets with sorted elements into a single list
+    # Join the sorted buckets into a single list
     final_output = []
     for x in range(len (input_list)):
         final_output = final_output + buckets_list[x]
     return final_output
 
+# Initialise the random generator
 rng = np.random.default_rng()
- 
+
+# empty array to contain sorting times
 test= []
+# Function to allow multiple input instances 
 def runs(noRuns):
-    
+    # Loop through list of input sizes
     for x in noRuns:
-        
+        # fetches current number of seconds since epoch
         start_time = time.time()
-        # call your function
+        # call the sorting function
         bucket_sort(rng.integers(low=0, high=10, size=x))
+        # fetches current number of seconds since epoch
         end_time = time.time()
+        # subtract start and end times to get the elapsed time
         time_elapsed = end_time - start_time
+        # add this time to the array
         test.append(time_elapsed)
     
 
@@ -90,6 +92,7 @@ test= np.reshape(test, (10, 13))
 # print mean of columns
 print(test.mean(axis=0))
 
+# Open the times.csv file and append what comes next
 with open('times.csv', 'a') as f:
     # create the csv writer
     writer = csv.writer(f)

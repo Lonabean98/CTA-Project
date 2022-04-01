@@ -1,3 +1,4 @@
+# Import modules needed for analysis
 import pandas as pd
 import matplotlib.pyplot as plt
 
@@ -10,21 +11,23 @@ df.columns = ['100', '200', '500','750', '1000', '1250','2500', '3750', '5000', 
 # round df values to 4 decimal places
 df.round(4)
 
-df= df.rename(index={0: 'Bubble Sort', 1: 'Merge Sort', 2: 'Bucket Sort', 3:'Quick Sort', 4: 'TimSort'})
+# Name the corresponding algorithms
+df= df.rename(index={0: 'Bubble Sort', 1: 'Merge Sort', 2: 'Bucket Sort', 3:'Quick Sort', 4: 'Heap Sort'})
 
-
+# Label the index (this is acting as the column label)
 df.index.name='Size'
+print(df.round(4))
 
-#print(df.T) 
-
-# switch columns and index
+# switch columns and index and plot
 df.T.plot()
+
 # set y axis limit
 plt.ylim([0, 0.5])
 
+# label x and y axes
 plt.xlabel("Input size n")
 plt.ylabel("Running time (milliseconds)")
 
-
+# show plot
 plt.show()
 
